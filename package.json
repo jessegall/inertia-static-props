@@ -3,6 +3,7 @@
     "version": "0.0.2",
     "description": "A Vue plugin for Inertia.js that manages static props across requests",
     "main": "plugin.js",
+    "types": "plugin.d.ts",
     "keywords": [
         "inertia",
         "inertiajs",
