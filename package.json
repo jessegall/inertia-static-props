@@ -16,9 +16,9 @@
     "author": "Jesse Gall",
     "license": "MIT",
     "peerDependencies": {
-        "@inertiajs/vue3": "^1.0.0",
+        "@inertiajs/vue3": "^2.0.0",
         "vue": "^3.0.0",
-        "axios": "^1.0.0"
+        "axios": "^1.6.4"
     },
     "repository": {
         "type": "git",
