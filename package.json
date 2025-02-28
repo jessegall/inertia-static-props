@@ -1,0 +1,31 @@
+{
+    "name": "inertia-static-props",
+    "version": "0.0.1",
+    "description": "A Vue plugin for Inertia.js that manages static props across requests",
+    "main": "plugin.js",
+    "keywords": [
+        "inertia",
+        "inertiajs",
+        "vue",
+        "static-props",
+        "props"
+    ],
+    "files": [
+        "plugin.js"
+    ],
+    "author": "Jesse Gall",
+    "license": "MIT",
+    "peerDependencies": {
+        "@inertiajs/vue3": "^1.0.0",
+        "vue": "^3.0.0",
+        "axios": "^1.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jessegall/inertia-static-props"
+    },
+    "bugs": {
+        "url": "https://github.com/jessegall/inertia-static-props/issues"
+    },
+    "homepage": "https://github.com/jessegall/inertia-static-props"
+}
