@@ -12,7 +12,8 @@
         "props"
     ],
     "files": [
-        "plugin.js"
+        "plugin.js",
+        "plugin.d.ts"
     ],
     "author": "Jesse Gall",
     "license": "MIT",
