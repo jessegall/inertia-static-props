@@ -32,7 +32,9 @@ class InertiaStaticPropsTest extends TestCase
             'nonStaticProp' => 'value',
         ]);
 
-        $this->get('/test')
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test')
             ->assertInertia(fn(Assert $page) => $page
                 ->where('staticPropOne', 'one')
                 ->where('staticPropTwo', 'two')
@@ -50,6 +52,7 @@ class InertiaStaticPropsTest extends TestCase
         ]);
 
         $this
+            ->withoutExceptionHandling()
             ->get('/test', [
                 Header::INERTIA => true,
             ])
@@ -76,7 +79,9 @@ class InertiaStaticPropsTest extends TestCase
             }),
         ]);
 
-        $this->get('/test', [Header::INERTIA => true]);
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test', [Header::INERTIA => true]);
 
         $this->assertFalse($triggered);
     }
@@ -92,6 +97,7 @@ class InertiaStaticPropsTest extends TestCase
         Inertia::reloadStaticProps();
 
         $this
+            ->withoutExceptionHandling()
             ->get('/test', [
                 Header::INERTIA => true,
             ])
@@ -115,12 +121,14 @@ class InertiaStaticPropsTest extends TestCase
         ]);
 
         $this
+            ->withoutExceptionHandling()
             ->post('/test')
             ->assertRedirect('/test');
 
         $this->assertTrue(session()->has('inertia.reload-static-props'));
 
         $this
+            ->withoutExceptionHandling()
             ->get('/test', [
                 Header::INERTIA => true,
             ])
