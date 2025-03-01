@@ -21,12 +21,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function registerMacro(): void
     {
-        /** @var ResponseFactoryDecorator $decorator */
-        $decorator = $this->app->make(ResponseFactory::class);
-
-        Inertia::macro('reloadStaticProps', function () use ($decorator) {
+        Inertia::macro('reloadStaticProps', function () {
             if (request()->isMethod(Request::METHOD_GET)) {
-                $decorator->loadStaticProps();
+                ResponseFactoryDecorator::loadStaticProps();
             } else {
                 session()->flash('inertia.reload-static-props');
             }

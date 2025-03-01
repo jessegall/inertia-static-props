@@ -13,7 +13,7 @@ class ResponseFactoryDecorator
 {
     use ForwardsCalls;
 
-    protected bool $loadStaticProps = false;
+    protected static bool $loadStaticProps = false;
 
     /**
      * @param ResponseFactory $factory
@@ -56,12 +56,6 @@ class ResponseFactoryDecorator
         return $response;
     }
 
-    public function loadStaticProps(): static
-    {
-        $this->loadStaticProps = true;
-
-        return $this;
-    }
 
     protected function getStaticProps(array $props): array
     {
@@ -70,9 +64,9 @@ class ResponseFactoryDecorator
 
     protected function shouldLoadStaticProps(): bool
     {
-        return $this->loadStaticProps ||
-            session()->pull('inertia.reload-static-props', false) ||
-            ! request()->header(Header::INERTIA);
+        return self::$loadStaticProps
+            || session()->pull('inertia.reload-static-props', false)
+            || ! request()->header(Header::INERTIA);
     }
 
     protected function normalizeStaticProps(array $props): array
@@ -97,6 +91,11 @@ class ResponseFactoryDecorator
     {
         $this->factory->flushShared();
         $this->factory->share($props);
+    }
+
+    public static function loadStaticProps(): void
+    {
+        static::$loadStaticProps = true;
     }
 
 }
