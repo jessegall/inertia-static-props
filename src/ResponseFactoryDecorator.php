@@ -5,8 +5,6 @@ namespace JesseGall\InertiaStaticProps;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Inertia\ResponseFactory;
 use Inertia\Support\Header;
-use ReflectionClass;
-use ReflectionProperty;
 
 /**
  * @mixin \Inertia\ResponseFactory
@@ -17,15 +15,12 @@ class ResponseFactoryDecorator
 
     protected bool $loadStaticProps = false;
 
-    protected ReflectionProperty $sharedProps;
-
+    /**
+     * @param ResponseFactory $factory
+     */
     public function __construct(
-        protected readonly ResponseFactory $factory
-    )
-    {
-        $reflection = new ReflectionClass($factory);
-        $this->sharedProps = $reflection->getProperty('sharedProps');
-    }
+        protected readonly mixed $factory
+    ) {}
 
     public function __call(string $name, array $arguments)
     {
@@ -100,7 +95,8 @@ class ResponseFactoryDecorator
 
     protected function setSharedProps(array $props): void
     {
-        $this->sharedProps->setValue($this->factory, $props);
+        $this->factory->flushShared();
+        $this->factory->share($props);
     }
 
 }

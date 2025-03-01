@@ -11,10 +11,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register()
     {
-        $this->app->extend(
-            ResponseFactory::class,
-            fn(ResponseFactory $factory) => new ResponseFactoryDecorator($factory)
-        );
+        $this->app->extend(ResponseFactory::class, fn($factory) => new ResponseFactoryDecorator($factory));
     }
 
     public function boot(): void
