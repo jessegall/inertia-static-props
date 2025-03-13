@@ -37,10 +37,14 @@ trait Delegates
             $properties = array_keys(get_object_vars($this));
 
             foreach ($properties as $property) {
+                // Overwrite the decorator property with a reference of the delegate property.
+                // This creates a direct reference so both properties share the same value.
                 $self->{$property} = &$this->{$property};
             }
         };
 
+        // Call the linker with the delegate as context.
+        // This allows the linker to access all (including private) properties of the delegate.
         $linker->call($this->delegate);
     }
 

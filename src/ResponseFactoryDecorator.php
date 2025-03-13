@@ -17,13 +17,19 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      */
     use Delegates;
 
+    /**
+     * To ensure that custom ResponseFactory implementations will continue to work,
+     * we delegate all properties to the given ResponseFactory.
+     *
+     * @param ResponseFactory $delegate
+     */
     public function __construct(ResponseFactory $delegate)
     {
         $this->delegateTo($delegate);
     }
 
     /**
-     * Render a component with props and wrap in ResponseDecorator
+     * We override the render method to resolve static props when necessary.
      *
      * @param string $component The component to render
      * @param mixed $props The props to pass to the component
@@ -32,15 +38,14 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
     #[Override]
     public function render(string $component, $props = []): Response
     {
+        // We render the component using the delegate's render method,
         $response = $this->delegate->render($component, $props);
 
         $decorator = new ResponseDecorator($response);
 
-        if ($this->shouldLoadStaticProps()) {
-            return $decorator->resolveWithStaticProps();
-        } else {
-            return $decorator->resolveWithoutStaticProps();
-        }
+        return $this->shouldLoadStaticProps()
+            ? $decorator->resolveWithStaticProps()
+            : $decorator->resolveWithoutStaticProps();
     }
 
     /**

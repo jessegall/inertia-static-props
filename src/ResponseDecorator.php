@@ -14,19 +14,35 @@ class ResponseDecorator extends Response implements Decorator
      */
     use Delegates;
 
+    /**
+     * Delegates all properties to the given Response, allowing
+     * this class to effectively use "$this" as if it were the
+     * delegate instance. This ensures custom Response
+     * implementations continue to work when wrapped.
+     */
     public function __construct(Response $delegate)
     {
         // Skip the parent constructor as we delegate all properties
         $this->delegateTo($delegate);
     }
 
+    /**
+     * Resolve the response with static props.
+     *
+     * @return Response The response
+     */
     public function resolveWithStaticProps(): Response
     {
-        $this->loadStaticPropValues();
+        $this->prepareStaticPropValues();
 
         return $this->delegate;
     }
 
+    /**
+     * Resolve the response without static props.
+     *
+     * @return Response The response
+     */
     public function resolveWithoutStaticProps(): Response
     {
         $this->removeStaticProps();
@@ -34,7 +50,15 @@ class ResponseDecorator extends Response implements Decorator
         return $this->delegate;
     }
 
-    protected function loadStaticPropValues(): void
+    /**
+     * Prepare static prop values for the response.
+     *
+     * Replaces any StaticProp instances with a closure that returns
+     * the value, allowing Inertia to process them normally.
+     *
+     * @return void
+     */
+    protected function prepareStaticPropValues(): void
     {
         $staticProps = [];
 
@@ -48,6 +72,11 @@ class ResponseDecorator extends Response implements Decorator
         $this->props['staticProps'] = $staticProps;
     }
 
+    /**
+     * Remove static props from the response.
+     *
+     * @return void This method does not return a value.
+     */
     protected function removeStaticProps(): void
     {
         $this->props = array_filter($this->props, fn($prop) => ! $prop instanceof StaticProp);
