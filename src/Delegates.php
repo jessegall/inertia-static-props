@@ -15,7 +15,7 @@ trait Delegates
     /**
      * @var T The object to delegate to
      */
-    private(set) object $delegate;
+    public object $delegate;
 
     /**
      * Initialize bidirectional property delegation between this class and its delegate.
