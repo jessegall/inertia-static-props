@@ -4,8 +4,12 @@ namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
 use Inertia\Inertia;
+use Inertia\Response;
 use Inertia\Support\Header;
 use Inertia\Testing\AssertableInertia as Assert;
+use JesseGall\InertiaStaticProps\Delegates;
+use JesseGall\InertiaStaticProps\DelegatorContract;
+use JesseGall\InertiaStaticProps\ResponseDecorator;
 use JesseGall\InertiaStaticProps\StaticProp;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
@@ -17,6 +21,14 @@ class InertiaStaticPropsTest extends TestCase
     protected function defineRoutes($router)
     {
         $router->get('/test', fn() => Inertia::render('TestComponent'));
+
+        $router->get('/test-with-render-static-props', function () {
+            return Inertia::render('TestComponent', [
+                'staticPropOne' => new StaticProp(fn() => 'one'),
+                'staticPropTwo' => new StaticProp(fn() => 'two'),
+                'nonStaticProp' => 'value',
+            ]);
+        });
 
         $router->post('/test', function () {
             Inertia::reloadStaticProps();
@@ -38,6 +50,20 @@ class InertiaStaticPropsTest extends TestCase
             ->assertInertia(fn(Assert $page) => $page
                 ->where('staticPropOne', 'one')
                 ->where('staticPropTwo', 'two')
+                ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
+                ->etc()
+            );
+    }
+
+    public function test_StaticPropsAreIncludedInInitialPageLoad_WhenRenderedWithStaticProps()
+    {
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test-with-render-static-props')
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('staticPropOne', 'one')
+                ->where('staticPropTwo', 'two')
+                ->where('nonStaticProp', 'value')
                 ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
                 ->etc()
             );

@@ -9,7 +9,7 @@ use Inertia\ResponseFactory;
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
 
-    public function register()
+    public function register(): void
     {
         $this->app->extend(ResponseFactory::class, fn($factory) => new ResponseFactoryDecorator($factory));
     }

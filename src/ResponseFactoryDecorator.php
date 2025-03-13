@@ -2,64 +2,33 @@
 
 namespace JesseGall\InertiaStaticProps;
 
-use Illuminate\Support\Traits\ForwardsCalls;
+use Inertia\Response;
 use Inertia\ResponseFactory;
 use Inertia\Support\Header;
+use Override;
 
 /**
- * @mixin \Inertia\ResponseFactory
+ * @implements DelegatorContract<ResponseFactory>
  */
-class ResponseFactoryDecorator
+class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContract
 {
-    use ForwardsCalls;
+    use Delegates;
 
     protected static bool $loadStaticProps = false;
 
-    /**
-     * @param ResponseFactory $factory
-     */
     public function __construct(
-        protected readonly mixed $factory
-    ) {}
-
-    public function __call(string $name, array $arguments)
+        public readonly mixed $delegate
+    )
     {
-        return $this->forwardCallTo($this->factory, $name, $arguments);
+        $this->initializeProperties();
     }
 
-    /**
-     * Render the Inertia response with static props handling.
-     *
-     * Instead of returning a custom Response class, this method temporarily modifies
-     * the shared props at the factory level. This approach ensures better compatibility
-     * with third-party packages and reduces complexity.
-     *
-     * @param mixed ...$args Arguments to pass to the original render method
-     * @return \Inertia\Response The rendered Inertia response
-     */
-    public function render(...$args)
+    #[Override]
+    public function render(string $component, $props = []): Response
     {
-        $originalProps = $this->factory->getShared();
+        $delegate = parent::render($component, $props);
 
-        if ($this->shouldLoadStaticProps()) {
-            $props = $this->normalizeStaticProps($originalProps);
-        } else {
-            $props = $this->removeStaticProps($originalProps);
-        }
-
-        $this->setSharedProps($props);
-
-        $response = $this->factory->render(...$args);
-
-        $this->setSharedProps($originalProps);
-
-        return $response;
-    }
-
-
-    protected function getStaticProps(array $props): array
-    {
-        return array_filter($props, fn($prop) => $prop instanceof StaticProp);
+        return new ResponseDecorator($delegate, $this->shouldLoadStaticProps());
     }
 
     protected function shouldLoadStaticProps(): bool
@@ -67,30 +36,6 @@ class ResponseFactoryDecorator
         return self::$loadStaticProps
             || session()->pull('inertia.reload-static-props', false)
             || ! request()->header(Header::INERTIA);
-    }
-
-    protected function normalizeStaticProps(array $props): array
-    {
-        $staticProps = $this->getStaticProps($props);
-
-        foreach ($staticProps as $key => $prop) {
-            $props[$key] = $prop();
-        }
-
-        $props['staticProps'] = array_keys($staticProps);
-
-        return $props;
-    }
-
-    protected function removeStaticProps(array $props): array
-    {
-        return array_filter($props, fn($prop) => ! ($prop instanceof StaticProp));
-    }
-
-    protected function setSharedProps(array $props): void
-    {
-        $this->factory->flushShared();
-        $this->factory->share($props);
     }
 
     public static function loadStaticProps(): void
