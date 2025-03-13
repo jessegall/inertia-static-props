@@ -4,12 +4,10 @@ namespace Tests\Feature;
 
 use JesseGall\InertiaStaticProps\Delegates;
 use JesseGall\InertiaStaticProps\DelegatorContract;
-use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
 
 class DelegatorTest extends TestCase
 {
-    use WithWorkbench;
 
     public function test_DelegatorCorrectlyProxiesPropertyAccessAndMethods()
     {
@@ -83,6 +81,18 @@ class DelegatorTest extends TestCase
         $this->assertEquals(['initial' => 'value'], $delegator->array);
     }
 
+    public function test_DelegatorCanAccessAndModifyPrivateProperties()
+    {
+        $delegator = new DelegatorTestDelegator(
+            new DelegatorTestDelegate()
+        );
+
+        $delegator->setPrivateProperty('private-value');
+
+        $this->assertEquals('private-value', $delegator->getPrivateProperty());
+        $this->assertEquals('private-value', $delegator->delegate->getPrivateProperty());
+    }
+
     public function test_DelegatorCanOverrideDelegateMethods()
     {
         $delegator = new DelegatorTestDelegator(
@@ -110,6 +120,8 @@ class DelegatorTestDelegate
     public int $count = 0;
     public array $array = [];
 
+    private string $privateProperty = '';
+
     public function incrementCount(): void
     {
         $this->count++;
@@ -118,6 +130,16 @@ class DelegatorTestDelegate
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function setPrivateProperty(string $value): void
+    {
+        $this->privateProperty = $value;
+    }
+
+    public function getPrivateProperty(): string
+    {
+        return $this->privateProperty;
     }
 
 }
@@ -130,7 +152,7 @@ class DelegatorTestDelegator extends DelegatorTestDelegate implements DelegatorC
         public readonly mixed $delegate
     )
     {
-        $this->initializeProperties();
+        $this->delegateProperties();
     }
 
     public function setCount(int $count): void
@@ -142,4 +164,5 @@ class DelegatorTestDelegator extends DelegatorTestDelegate implements DelegatorC
     {
         $this->count *= $multiplier;
     }
+
 }

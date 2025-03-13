@@ -3,16 +3,34 @@
 namespace JesseGall\InertiaStaticProps;
 
 use Illuminate\Support\Traits\ForwardsCalls;
+use ReflectionClass;
 
 trait Delegates
 {
     use ForwardsCalls;
 
-    protected function initializeProperties(): void
+    protected function delegateProperties(): void
     {
-        foreach (get_object_vars($this->delegate) as $key => $value) {
-            $this->{$key} = &$this->delegate->{$key};
+        $reflector = new ReflectionClass($this->delegate);
+
+        foreach ($reflector->getProperties() as $property) {
+            if ($property->isStatic()) {
+                continue;
+            }
+
+            $this->linkReference($property->getName());
         }
+    }
+
+    private function linkReference(string $propertyName): void
+    {
+        $self = $this;
+
+        $writer = function () use ($propertyName, $self) {
+            $self->{$propertyName} = &$this->{$propertyName};
+        };
+
+        $writer->call($this->delegate);
     }
 
     public function __call($name, $arguments): mixed
@@ -20,12 +38,12 @@ trait Delegates
         return $this->forwardDecoratedCallTo($this->delegate, $name, $arguments);
     }
 
-    public function __get($name)
+    public function __get($name): mixed
     {
         return $this->delegate->{$name};
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
         $this->delegate->{$name} = $value;
     }
