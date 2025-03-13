@@ -34,7 +34,7 @@ The package will auto-register its service provider if you're using Laravel's pa
 Otherwise, you can manually register the service provider:
 
 ```php
-JesseGall\InertiaStaticProps\ServiceProvider::class;
+JesseGall\InertiaStaticProps\ServiceProvider::class
 ```
 
 ### Frontend
