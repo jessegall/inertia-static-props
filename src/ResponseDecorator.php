@@ -2,92 +2,55 @@
 
 namespace JesseGall\InertiaStaticProps;
 
-use Illuminate\Http\Request;
 use Inertia\Response;
-use Inertia\Support\Header;
-use Override;
 
 /**
- * @implements DelegatorContract<Response>
+ * @implements Decorator<Response>
  */
-class ResponseDecorator extends Response implements DelegatorContract
+class ResponseDecorator extends Response implements Decorator
 {
     use Delegates;
 
-    /**
-     * @param mixed $delegate The object being decorated
-     * @param bool $loadStaticProps Whether to load static properties
-     */
     public function __construct(
-        public readonly mixed $delegate,
-        public readonly bool $loadStaticProps,
+        public readonly object $delegate,
     )
     {
         // Skip parent constructor as we're delegating property calls
         $this->initializePropertyDelegation();
     }
 
-    /**
-     * Resolve properties with static props handling
-     *
-     * @param Request $request The current request
-     * @param array $props Properties to resolve
-     * @return array Resolved properties
-     */
-    #[Override]
-    public function resolveProperties(Request $request, array $props): array
+    public function resolveWithStaticProps(): Response
     {
-        $props = parent::resolveProperties($request, $props);
+        $this->loadStaticPropValues();
 
-        return $this->loadStaticProps
-            ? $this->resolveStaticProps($props)
-            : $this->unloadStaticProps($props);
+        return $this->delegate;
     }
 
-    /**
-     * Resolve and add static properties to props array
-     *
-     * @param array $props
-     * @return array
-     */
-    public function resolveStaticProps(array $props): array
+    public function resolveWithoutStaticProps(): Response
     {
-        $staticProps = $this->getStaticProps();
+        $this->removeStaticProps();
 
-        foreach ($staticProps as $key => $prop) {
-            $props[$key] = $prop();
+        return $this->delegate;
+    }
+
+    protected function loadStaticPropValues(): void
+    {
+        $staticProps = [];
+
+        foreach ($this->props as $key => $value) {
+            if ($value instanceof StaticProp) {
+                $value = $value();
+                $this->props[$key] = fn() => $value;
+                $staticProps[] = $key;
+            }
         }
 
-        $props['staticProps'] = array_keys($staticProps);
-
-        return $props;
+        $this->props['staticProps'] = $staticProps;
     }
 
-    /**
-     * Remove static properties from props array
-     *
-     * @param array $props
-     * @return array
-     */
-    public function unloadStaticProps(array $props): array
+    protected function removeStaticProps(): void
     {
-        $staticProps = $this->getStaticProps();
-
-        foreach (array_keys($staticProps) as $key) {
-            unset($props[$key]);
-        }
-
-        return $props;
-    }
-
-    /**
-     * Get all static properties
-     *
-     * @return array<string, StaticProp>
-     */
-    public function getStaticProps(): array
-    {
-        return array_filter($this->props, fn($prop) => $prop instanceof StaticProp);
+        $this->props = array_filter($this->props, fn($prop) => ! $prop instanceof StaticProp);
     }
 
 }

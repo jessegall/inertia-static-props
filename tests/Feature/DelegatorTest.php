@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use JesseGall\InertiaStaticProps\Delegates;
-use JesseGall\InertiaStaticProps\DelegatorContract;
+use JesseGall\InertiaStaticProps\Decorator;
 use Orchestra\Testbench\TestCase;
 
 class DelegatorTest extends TestCase
@@ -144,12 +144,12 @@ class DelegatorTestDelegate
 
 }
 
-class DelegatorTestDelegator extends DelegatorTestDelegate implements DelegatorContract
+class DelegatorTestDelegator extends DelegatorTestDelegate implements Decorator
 {
     use Delegates;
 
     public function __construct(
-        public readonly mixed $delegate
+        public readonly object $delegate
     )
     {
         $this->initializePropertyDelegation();

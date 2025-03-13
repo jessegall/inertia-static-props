@@ -8,17 +8,14 @@ use Inertia\Support\Header;
 use Override;
 
 /**
- * @implements DelegatorContract<ResponseFactory>
+ * @implements Decorator<ResponseFactory>
  */
-class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContract
+class ResponseFactoryDecorator extends ResponseFactory implements Decorator
 {
     use Delegates;
 
-    /**
-     * @param mixed $delegate The object being decorated
-     */
     public function __construct(
-        public readonly mixed $delegate
+        public readonly object $delegate
     )
     {
         $this->initializePropertyDelegation();
@@ -36,7 +33,13 @@ class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContr
     {
         $response = parent::render($component, $props);
 
-        return new ResponseDecorator($response, $this->shouldLoadStaticProps());
+        $decorator = new ResponseDecorator($response);
+        
+        if ($this->shouldLoadStaticProps()) {
+            return $decorator->resolveWithStaticProps();
+        } else {
+            return $decorator->resolveWithoutStaticProps();
+        }
     }
 
     /**

@@ -3,9 +3,9 @@
 namespace JesseGall\InertiaStaticProps;
 
 /**
- * @template T
+ * @template T of object
  */
-interface DelegatorContract
+interface Decorator
 {
 
     /**
@@ -13,7 +13,7 @@ interface DelegatorContract
      *
      * @var T
      */
-    public mixed $delegate {
+    public object $delegate {
         get;
     }
 

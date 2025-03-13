@@ -5,7 +5,7 @@ namespace JesseGall\InertiaStaticProps;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
- * @phpstan-require-implements DelegatorContract
+ * @phpstan-require-implements Decorator
  */
 trait Delegates
 {
