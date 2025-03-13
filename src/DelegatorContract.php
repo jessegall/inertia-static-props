@@ -9,6 +9,8 @@ interface DelegatorContract
 {
 
     /**
+     * The delegate object that will be proxied.
+     *
      * @var T
      */
     public mixed $delegate {

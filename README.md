@@ -8,9 +8,13 @@ visit.
 
 This is particularly useful for data that rarely or never changes during a user session, such as:
 
-- Translations
-- Enum values
-- Configuration settings
+- Translations and localization strings
+- Application-wide constants and configuration settings
+- Permission definitions and feature flags
+- Dropdown options and select lists (countries, currencies, etc.)
+- UI theme configuration and global styling variables
+- Form validation rules and schema definitions
+- Navigation menu structures and sidebar configurations
 
 By using static props, you can significantly reduce the payload size and processing time for subsequent requests,
 leading to improved performance and a better user experience.
@@ -63,7 +67,6 @@ createInertiaApp({
 ### Basic Usage
 
 You can share static props from anywhere in your application.
-As long as you make sure that the static props are shared on the initial page load.
 
 The most common place is in your `HandleInertiaRequests` middleware, but this is not required:
 
@@ -97,25 +100,24 @@ class HandleInertiaRequests extends Middleware
 }
 ```
 
-### How It Works
+### Alternative Usage
 
-Behind the scenes, the package:
+You can also use the `staticProp` macro directly from the Inertia facade:
 
-1. Identifies props wrapped in `StaticProp` during the initial page load
-2. Evaluates these props once and sends them to the client
-3. Caches them in the frontend (browser)
-4. On subsequent requests, these props are omitted from the server response
-5. The client-side adapter injects the cached props back into the page props
+```php
+use Inertia\Inertia;
 
-This results in smaller payloads and reduced server processing time for subsequent requests.
-
-## Configuration
-
-No configuration is required to get started with Laravel Inertia Static Props.
+// Share static props using the macro
+Inertia::share([
+    'translations' => Inertia::staticProp(fn() => Lang::get('all')),
+    'enums' => Inertia::staticProp(fn() => [...]),
+]);
+```
 
 ### Manually Refreshing Static Props
 
-Sometimes you need to refresh static props after certain actions:
+Sometimes you need to refresh static props after certain actions, like changing the users locale, or when the user
+permissions change.
 
 ```php
 class LocaleController extends Controller
@@ -130,6 +132,47 @@ class LocaleController extends Controller
     }
 }
 ```
+
+### Adding Static Props to Component Renders
+
+You can include static props when rendering components:
+
+```php
+return Inertia::render('Component', [
+    'regularProp' => 'value',
+    'staticPropExample' => new StaticProp(fn() => 'static value'),
+]);
+```
+
+***Note:***
+Static props are only sent to the client during the initial page load. If your controller is accessed after the
+initial page load (e.g., navigating to a different route), you'll need to reload the static props to ensure
+the static props are sent to the client. For this reason, it's generally better to share static props globally through
+middleware or a service provider where they'll be consistently available.
+
+If you decide to use static props in a controller, you must tell Inertia to reload the static props before rendering the
+component:
+
+```php
+// Make sure to reload static props if the controller is accessed after the initial page load
+Inertia::reloadStaticProps(); 
+
+return Inertia::render('Component', [
+    'staticProp' => new StaticProp(...),
+]);
+```
+
+### How It Works
+
+Behind the scenes, the package:
+
+1. Identifies props wrapped in `StaticProp` during the initial page load
+2. Evaluates these props once and sends them to the client
+3. Caches them in the frontend (browser)
+4. On subsequent requests, these props are omitted from the server response
+5. The client-side adapter injects the cached props back into the page props
+
+This results in smaller payloads and reduced server processing time for subsequent requests.
 
 ### License
 

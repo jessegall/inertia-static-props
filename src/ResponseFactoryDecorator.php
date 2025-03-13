@@ -14,8 +14,9 @@ class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContr
 {
     use Delegates;
 
-    protected static bool $loadStaticProps = false;
-
+    /**
+     * @param mixed $delegate The object being decorated
+     */
     public function __construct(
         public readonly mixed $delegate
     )
@@ -23,24 +24,49 @@ class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContr
         $this->initializePropertyDelegation();
     }
 
+    /**
+     * Render a component with props and wrap in ResponseDecorator
+     *
+     * @param string $component The component to render
+     * @param mixed $props The props to pass to the component
+     * @return Response The decorated response
+     */
     #[Override]
     public function render(string $component, $props = []): Response
     {
-        $delegate = parent::render($component, $props);
+        $response = parent::render($component, $props);
 
-        return new ResponseDecorator($delegate, $this->shouldLoadStaticProps());
+        return new ResponseDecorator($response, $this->shouldLoadStaticProps());
     }
 
+    /**
+     * Determine if static props should be loaded
+     *
+     * @return bool
+     */
     protected function shouldLoadStaticProps(): bool
     {
-        return self::$loadStaticProps
-            || session()->pull('inertia.reload-static-props', false)
-            || ! request()->header(Header::INERTIA);
+        return $this->isInitialRequest() || $this->isReloadRequested();
     }
 
-    public static function loadStaticProps(): void
+    /**
+     * Check if this is the initial request
+     *
+     * @return bool
+     */
+    protected function isInitialRequest(): bool
     {
-        static::$loadStaticProps = true;
+        return ! request()->header(Header::INERTIA);
+    }
+
+    /**
+     * Check if a reload is requested
+     *
+     * @return bool
+     */
+    protected function isReloadRequested(): bool
+    {
+        return app(StaticPropsReloader::class)->isReloadRequested();
     }
 
 }

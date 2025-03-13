@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Routing\Router;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Inertia\Inertia;
-use Inertia\Response;
 use Inertia\Support\Header;
 use Inertia\Testing\AssertableInertia as Assert;
-use JesseGall\InertiaStaticProps\Delegates;
-use JesseGall\InertiaStaticProps\DelegatorContract;
-use JesseGall\InertiaStaticProps\ResponseDecorator;
 use JesseGall\InertiaStaticProps\StaticProp;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
@@ -21,19 +18,6 @@ class InertiaStaticPropsTest extends TestCase
     protected function defineRoutes($router)
     {
         $router->get('/test', fn() => Inertia::render('TestComponent'));
-
-        $router->get('/test-with-render-static-props', function () {
-            return Inertia::render('TestComponent', [
-                'staticPropOne' => new StaticProp(fn() => 'one'),
-                'staticPropTwo' => new StaticProp(fn() => 'two'),
-                'nonStaticProp' => 'value',
-            ]);
-        });
-
-        $router->post('/test', function () {
-            Inertia::reloadStaticProps();
-            return redirect('/test');
-        });
     }
 
     public function test_StaticPropsAreIncludedInInitialPageLoad()
@@ -57,6 +41,14 @@ class InertiaStaticPropsTest extends TestCase
 
     public function test_StaticPropsAreIncludedInInitialPageLoad_WhenRenderedWithStaticProps()
     {
+        $this->app->make(Router::class)->get('/test-with-render-static-props', function () {
+            return Inertia::render('TestComponent', [
+                'staticPropOne' => new StaticProp(fn() => 'one'),
+                'staticPropTwo' => new StaticProp(fn() => 'two'),
+                'nonStaticProp' => 'value',
+            ]);
+        });
+
         $this
             ->withoutExceptionHandling()
             ->get('/test-with-render-static-props')
@@ -64,6 +56,57 @@ class InertiaStaticPropsTest extends TestCase
                 ->where('staticPropOne', 'one')
                 ->where('staticPropTwo', 'two')
                 ->where('nonStaticProp', 'value')
+                ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
+                ->etc()
+            );
+    }
+
+    public function test_StaticPropsAreIncludedAfterInitialPageLoad_WhenRenderingWithStaticProps_AndStaticPropsAreReloaded()
+    {
+        Inertia::share([
+            'staticPropOne' => new StaticProp(fn() => 'one'),
+            'staticPropTwo' => new StaticProp(fn() => 'two'),
+        ]);
+
+        $this->app->make(Router::class)->get('/test-with-render-static-props-and-reload', function () {
+            Inertia::reloadStaticProps();
+
+            return Inertia::render('TestComponent', [
+                'staticPropOne' => new StaticProp(fn() => 'one'),
+                'staticPropTwo' => new StaticProp(fn() => 'two'),
+                'nonStaticProp' => 'value',
+            ]);
+        });
+
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test-with-render-static-props-and-reload', [
+                Header::INERTIA => true,
+            ])
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->has('props', fn(AssertableJson $props) => $props
+                    ->where('staticPropOne', 'one')
+                    ->where('staticPropTwo', 'two')
+                    ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
+                    ->etc()
+                )
+                ->etc()
+            );
+    }
+
+    public function test_StaticPropsCanBeSharedUsingMacro()
+    {
+        Inertia::share([
+            'staticPropOne' => Inertia::staticProp(fn() => 'one'),
+            'staticPropTwo' => Inertia::staticProp(fn() => 'two'),
+        ]);
+
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test')
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('staticPropOne', 'one')
+                ->where('staticPropTwo', 'two')
                 ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
                 ->etc()
             );
@@ -140,6 +183,11 @@ class InertiaStaticPropsTest extends TestCase
 
     public function test_StaticPropsAreIncludedInSubsequentVisits_WhenStaticPropsAreReloaded_DuringNonGetRequest()
     {
+        $this->app->make(Router::class)->post('/test', function () {
+            Inertia::reloadStaticProps();
+            return redirect('/test');
+        });
+
         Inertia::share([
             'staticPropOne' => new StaticProp(fn() => 'one'),
             'staticPropTwo' => new StaticProp(fn() => 'two'),

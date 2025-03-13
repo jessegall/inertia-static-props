@@ -2,31 +2,33 @@
 
 namespace JesseGall\InertiaStaticProps;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Inertia\Inertia;
 use Inertia\ResponseFactory;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
 
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
     public function register(): void
     {
         $this->app->extend(ResponseFactory::class, fn($factory) => new ResponseFactoryDecorator($factory));
+        $this->app->singleton(StaticPropsReloader::class);
     }
 
+    /**
+     * Bootstrap the application services.
+     *
+     * @return void
+     */
     public function boot(): void
     {
-        $this->registerMacro();
+        Inertia::macro('staticProp', fn(callable $value) => new StaticProp($value));
+        Inertia::macro('reloadStaticProps', $this->app->make(StaticPropsReloader::class));
     }
 
-    public function registerMacro(): void
-    {
-        Inertia::macro('reloadStaticProps', function () {
-            if (request()->isMethod(Request::METHOD_GET)) {
-                ResponseFactoryDecorator::loadStaticProps();
-            } else {
-                session()->flash('inertia.reload-static-props');
-            }
-        });
-    }
 }
