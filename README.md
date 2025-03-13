@@ -34,7 +34,7 @@ The package will auto-register its service provider if you're using Laravel's pa
 Otherwise, you can manually register the service provider:
 
 ```php
-JesseGall\InertiaStaticProps\ServiceProvider::class;
+\JesseGall\InertiaStaticProps\ServiceProvider::class
 ```
 
 ### Frontend
@@ -149,9 +149,6 @@ Static props are only sent to the client during the initial page load. If your c
 initial page load (e.g., navigating to a different route), you'll need to reload the static props to ensure
 the static props are sent to the client. For this reason, it's generally better to share static props globally through
 middleware or a service provider where they'll be consistently available.
-
-If you decide to use static props in a controller, you must tell Inertia to reload the static props before rendering the
-component:
 
 ```php
 // Make sure to reload static props if the controller is accessed after the initial page load
