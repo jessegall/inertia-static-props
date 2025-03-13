@@ -20,14 +20,6 @@ class ResponseDecorator extends Response implements DelegatorContract
         public readonly bool $loadStaticProps,
     )
     {
-        parent::__construct(
-            $delegate->component,
-            $delegate->props,
-            $delegate->rootView,
-            $delegate->version,
-            $delegate->encryptHistory,
-        );
-
         $this->initializeProperties();
     }
 
