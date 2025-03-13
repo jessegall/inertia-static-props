@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Routing\Router;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Illuminate\Validation\Rules\In;
 use Inertia\Inertia;
 use Inertia\Response;
 use Inertia\ResponseFactory;
@@ -13,8 +12,6 @@ use Inertia\Testing\AssertableInertia as Assert;
 use JesseGall\InertiaStaticProps\StaticProp;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
-use Override;
-use Psr\Http\Message\ResponseInterface;
 
 class InertiaStaticPropsTest extends TestCase
 {
@@ -39,6 +36,7 @@ class InertiaStaticPropsTest extends TestCase
             ->assertInertia(fn(Assert $page) => $page
                 ->where('staticPropOne', 'one')
                 ->where('staticPropTwo', 'two')
+                ->where('nonStaticProp', 'value')
                 ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
                 ->etc()
             );
@@ -255,7 +253,8 @@ class InertiaStaticPropsTest extends TestCase
             );
     }
 
-    public function test_SupportsCustomResponses_WhenWrapping() {
+    public function test_SupportsCustomResponses_WhenWrapping()
+    {
         $currentFactory = Inertia::getFacadeRoot();
 
         $customFactory = new class extends ResponseFactory {
