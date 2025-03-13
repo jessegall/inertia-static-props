@@ -102,7 +102,7 @@ class HandleInertiaRequests extends Middleware
 
 ### Alternative Usage
 
-You can also use the `staticProp` macro directly from the Inertia facade:
+You can also use the `static` macro directly from the Inertia facade:
 
 ```php
 use Inertia\Inertia;
