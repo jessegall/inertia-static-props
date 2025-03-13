@@ -26,7 +26,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      *
      * @param string $component The component to render
      * @param mixed $props The props to pass to the component
-     * @return Response The decorated response
+     * @return Response The response
      */
     #[Override]
     public function render(string $component, $props = []): Response
@@ -34,7 +34,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
         $response = parent::render($component, $props);
 
         $decorator = new ResponseDecorator($response);
-        
+
         if ($this->shouldLoadStaticProps()) {
             return $decorator->resolveWithStaticProps();
         } else {
