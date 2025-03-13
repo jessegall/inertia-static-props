@@ -79,39 +79,22 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            
-            // Regular prop (sent on every request)
-            'user' => fn() => UserResource::from($request->user()),
-            
-            // Static prop (sent only once)
+  
+            // Using a StaticProp instance
             'translations' => new StaticProp(fn() => [
                 'pages' => Lang::get('pages'),
                 'exceptions' => Lang::get('exceptions'),
                 'components' => Lang::get('components'),
             ]),
             
-            // Another static prop example
-            'enums' => new StaticProp(fn() => [
-                'roleType' => RoleType::case(),
-                'userStatus' => UserStatus::case(),   
+            // Using the Inertia helper
+            'enums' => Inertia::static(fn() => [
+                'roleType' => RoleType::cases(),
+                'userStatus' => UserStatus::cases(),   
             ]),
         ];
     }
 }
-```
-
-### Alternative Usage
-
-You can also use the `static` macro directly from the Inertia facade:
-
-```php
-use Inertia\Inertia;
-
-// Share static props using the macro
-Inertia::share([
-    'translations' => Inertia::static(fn() => Lang::get('all')),
-    'enums' => Inertia::static(fn() => [...]),
-]);
 ```
 
 ### Manually Refreshing Static Props
@@ -164,10 +147,10 @@ return Inertia::render('Component', [
 Behind the scenes, the package:
 
 1. Identifies props wrapped in `StaticProp` during the initial page load
-2. Evaluates these props once and sends them to the client
+2. Evaluates these props and sends them to the client
 3. Caches them in the frontend (browser)
-4. On subsequent requests, these props are omitted from the server response
-5. The client-side adapter injects the cached props back into the page props
+4. On subsequent requests, these props will NOT be resolved on the server and are removed from the response.
+5. The client-side adapter injects the cached props back into the page props before Inertia processes them, creating a seamless experience as if the server had sent them.
 
 This results in smaller payloads and reduced server processing time for subsequent requests.
 
