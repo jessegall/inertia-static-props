@@ -27,7 +27,8 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot(): void
     {
-        Inertia::macro('staticProp', fn(callable $value) => new StaticProp($value));
+        Inertia::macro('static', fn(callable $value) => new StaticProp($value));
+        Inertia::macro('staticProp', fn(callable $value) => new StaticProp($value)); // Alias for static
         Inertia::macro('reloadStaticProps', $this->app->make(StaticPropsReloader::class));
     }
 

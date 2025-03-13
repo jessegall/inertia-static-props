@@ -97,8 +97,8 @@ class InertiaStaticPropsTest extends TestCase
     public function test_StaticPropsCanBeSharedUsingMacro()
     {
         Inertia::share([
-            'staticPropOne' => Inertia::staticProp(fn() => 'one'),
-            'staticPropTwo' => Inertia::staticProp(fn() => 'two'),
+            'staticPropOne' => Inertia::static(fn() => 'one'),
+            'staticPropTwo' => Inertia::static(fn() => 'two'),
         ]);
 
         $this
