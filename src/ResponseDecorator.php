@@ -20,7 +20,8 @@ class ResponseDecorator extends Response implements DelegatorContract
         public readonly bool $loadStaticProps,
     )
     {
-        $this->delegateProperties();
+        // We can skip the parent constructor call because we're delegating all property calls to the delegate
+        $this->initializePropertyDelegation();
     }
 
     #[Override]

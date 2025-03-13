@@ -20,7 +20,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements DelegatorContr
         public readonly mixed $delegate
     )
     {
-        $this->delegateProperties();
+        $this->initializePropertyDelegation();
     }
 
     #[Override]

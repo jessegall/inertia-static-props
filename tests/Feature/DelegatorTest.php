@@ -152,7 +152,7 @@ class DelegatorTestDelegator extends DelegatorTestDelegate implements DelegatorC
         public readonly mixed $delegate
     )
     {
-        $this->delegateProperties();
+        $this->initializePropertyDelegation();
     }
 
     public function setCount(int $count): void

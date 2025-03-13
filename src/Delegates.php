@@ -3,49 +3,51 @@
 namespace JesseGall\InertiaStaticProps;
 
 use Illuminate\Support\Traits\ForwardsCalls;
-use ReflectionClass;
 
+/**
+ * @phpstan-require-implements DelegatorContract
+ */
 trait Delegates
 {
     use ForwardsCalls;
 
-    protected function delegateProperties(): void
-    {
-        $reflector = new ReflectionClass($this->delegate);
-
-        foreach ($reflector->getProperties() as $property) {
-            if ($property->isStatic()) {
-                continue;
-            }
-
-            $this->linkReference($property->getName());
-        }
-    }
-
-    private function linkReference(string $propertyName): void
+    /**
+     * Initialize bidirectional property delegation between this class and its delegate.
+     *
+     * This method creates reference links between all properties of the delegate object
+     * and the corresponding properties in the current class. After initialization,
+     * changes to properties in either object will be reflected in both objects.
+     *
+     * @return void
+     */
+    protected function initializePropertyDelegation(): void
     {
         $self = $this;
 
-        $writer = function () use ($propertyName, $self) {
-            $self->{$propertyName} = &$this->{$propertyName};
+        $linker = function () use ($self) {
+            $properties = array_keys(get_object_vars($this));
+
+            foreach ($properties as $property) {
+                $self->{$property} = &$this->{$property};
+            }
         };
 
-        $writer->call($this->delegate);
+        $linker->call($this->delegate);
     }
 
+    /**
+     * Forward a method call to the given object, returning $this if the forwarded call returned itself.
+     *
+     * The delegate might have methods that are not defined on the decorator.
+     * This method allows us to call those methods on the delegate.
+     *
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
     public function __call($name, $arguments): mixed
     {
         return $this->forwardDecoratedCallTo($this->delegate, $name, $arguments);
-    }
-
-    public function __get($name): mixed
-    {
-        return $this->delegate->{$name};
-    }
-
-    public function __set($name, $value): void
-    {
-        $this->delegate->{$name} = $value;
     }
 
 }
