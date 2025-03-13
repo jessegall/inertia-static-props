@@ -109,8 +109,8 @@ use Inertia\Inertia;
 
 // Share static props using the macro
 Inertia::share([
-    'translations' => Inertia::staticProp(fn() => Lang::get('all')),
-    'enums' => Inertia::staticProp(fn() => [...]),
+    'translations' => Inertia::static(fn() => Lang::get('all')),
+    'enums' => Inertia::static(fn() => [...]),
 ]);
 ```
 
