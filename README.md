@@ -1,4 +1,4 @@
-# Laravel Inertia Static Props
+# Inertia Static Props
 *Optimize Inertia.js applications by loading static data only once*
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
