@@ -72,6 +72,7 @@ The most common place is in your `HandleInertiaRequests` middleware, but this is
 
 ```php
 use JesseGall\InertiaStaticProps\StaticProp;
+use Inertia\Inertia;
 
 class HandleInertiaRequests extends Middleware
 {
