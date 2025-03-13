@@ -148,11 +148,9 @@ class DelegatorTestDelegator extends DelegatorTestDelegate implements Decorator
 {
     use Delegates;
 
-    public function __construct(
-        public readonly object $delegate
-    )
+    public function __construct(object $delegate)
     {
-        $this->initializePropertyDelegation();
+        $this->delegateTo($delegate);
     }
 
     public function setCount(int $count): void

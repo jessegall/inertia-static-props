@@ -12,13 +12,14 @@ use Override;
  */
 class ResponseFactoryDecorator extends ResponseFactory implements Decorator
 {
+    /**
+     * @use Delegates<ResponseFactory>
+     */
     use Delegates;
 
-    public function __construct(
-        public readonly object $delegate
-    )
+    public function __construct(ResponseFactory $delegate)
     {
-        $this->initializePropertyDelegation();
+        $this->delegateTo($delegate);
     }
 
     /**
@@ -31,7 +32,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
     #[Override]
     public function render(string $component, $props = []): Response
     {
-        $response = parent::render($component, $props);
+        $response = $this->delegate->render($component, $props);
 
         $decorator = new ResponseDecorator($response);
 

@@ -4,12 +4,17 @@ namespace Tests\Feature;
 
 use Illuminate\Routing\Router;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Illuminate\Validation\Rules\In;
 use Inertia\Inertia;
+use Inertia\Response;
+use Inertia\ResponseFactory;
 use Inertia\Support\Header;
 use Inertia\Testing\AssertableInertia as Assert;
 use JesseGall\InertiaStaticProps\StaticProp;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
+use Override;
+use Psr\Http\Message\ResponseInterface;
 
 class InertiaStaticPropsTest extends TestCase
 {
@@ -63,11 +68,6 @@ class InertiaStaticPropsTest extends TestCase
 
     public function test_StaticPropsAreIncludedAfterInitialPageLoad_WhenRenderingWithStaticProps_AndStaticPropsAreReloaded()
     {
-        Inertia::share([
-            'staticPropOne' => new StaticProp(fn() => 'one'),
-            'staticPropTwo' => new StaticProp(fn() => 'two'),
-        ]);
-
         $this->app->make(Router::class)->get('/test-with-render-static-props-and-reload', function () {
             Inertia::reloadStaticProps();
 
@@ -213,6 +213,76 @@ class InertiaStaticPropsTest extends TestCase
                     ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
                     ->etc()
                 )
+                ->etc()
+            );
+    }
+
+    public function test_SupportsCustomResponses_WhenWrapped()
+    {
+        $currentFactory = Inertia::getFacadeRoot();
+
+        $customFactory = new class($currentFactory) extends ResponseFactory {
+
+            public function __construct(
+                protected ResponseFactory $delegate
+            ) {}
+
+            public function render(string $component, $props = []): Response
+            {
+                return $this->delegate->render($component, [
+                    'custom_injected_prop' => 'value',
+                    ...$this->sharedProps,
+                    ...$props,
+                ]);
+            }
+
+        };
+
+        Inertia::swap($customFactory);
+
+        Inertia::share([
+            'staticPropOne' => new StaticProp(fn() => 'one'),
+            'staticPropTwo' => new StaticProp(fn() => 'two'),
+        ]);
+
+        $this->withoutExceptionHandling()
+            ->get('/test')
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('staticPropOne', 'one')
+                ->where('staticPropTwo', 'two')
+                ->where('custom_injected_prop', 'value')
+                ->etc()
+            );
+    }
+
+    public function test_SupportsCustomResponses_WhenWrapping() {
+        $currentFactory = Inertia::getFacadeRoot();
+
+        $customFactory = new class extends ResponseFactory {
+
+            public function render(string $component, $props = []): Response
+            {
+                return parent::render($component, [
+                    'custom_injected_prop' => 'value',
+                    ...$props
+                ]);
+            }
+
+        };
+
+        $currentFactory->delegateTo($customFactory);
+
+        Inertia::share([
+            'staticPropOne' => new StaticProp(fn() => 'one'),
+            'staticPropTwo' => new StaticProp(fn() => 'two'),
+        ]);
+
+        $this->withoutExceptionHandling()
+            ->get('/test')
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('staticPropOne', 'one')
+                ->where('staticPropTwo', 'two')
+                ->where('custom_injected_prop', 'value')
                 ->etc()
             );
     }

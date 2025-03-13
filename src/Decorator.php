@@ -9,12 +9,9 @@ interface Decorator
 {
 
     /**
-     * The delegate object that will be proxied.
-     *
-     * @var T
+     * @param T $delegate
+     * @return void
      */
-    public object $delegate {
-        get;
-    }
+    public function delegateTo(object $delegate): void;
 
 }

@@ -9,14 +9,15 @@ use Inertia\Response;
  */
 class ResponseDecorator extends Response implements Decorator
 {
+    /**
+     * @use Delegates<Response>
+     */
     use Delegates;
 
-    public function __construct(
-        public readonly object $delegate,
-    )
+    public function __construct(Response $delegate)
     {
-        // Skip parent constructor as we're delegating property calls
-        $this->initializePropertyDelegation();
+        // Skip the parent constructor as we delegate all properties
+        $this->delegateTo($delegate);
     }
 
     public function resolveWithStaticProps(): Response
@@ -39,8 +40,7 @@ class ResponseDecorator extends Response implements Decorator
 
         foreach ($this->props as $key => $value) {
             if ($value instanceof StaticProp) {
-                $value = $value();
-                $this->props[$key] = fn() => $value;
+                $this->props[$key] = $value->asClosure();
                 $staticProps[] = $key;
             }
         }

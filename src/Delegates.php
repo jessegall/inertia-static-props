@@ -5,11 +5,17 @@ namespace JesseGall\InertiaStaticProps;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
- * @phpstan-require-implements Decorator
+ * @template T of object
+ * @phpstan-require-implements Decorator<T>
  */
 trait Delegates
 {
     use ForwardsCalls;
+
+    /**
+     * @var T The object to delegate to
+     */
+    private(set) object $delegate;
 
     /**
      * Initialize bidirectional property delegation between this class and its delegate.
@@ -18,10 +24,13 @@ trait Delegates
      * and the corresponding properties in the current class. After initialization,
      * changes to properties in either object will be reflected in both objects.
      *
+     * @param T $delegate
      * @return void
      */
-    protected function initializePropertyDelegation(): void
+    public function delegateTo(object $delegate): void
     {
+        $this->delegate = $delegate;
+
         $self = $this;
 
         $linker = function () use ($self) {

@@ -2,6 +2,7 @@
 
 namespace JesseGall\InertiaStaticProps;
 
+use Closure;
 use Illuminate\Support\Facades\App;
 
 class StaticProp
@@ -18,6 +19,11 @@ class StaticProp
     public function __invoke()
     {
         return App::call($this->value);
+    }
+
+    public function asClosure(): Closure
+    {
+        return fn() => $this();
     }
 
 }
