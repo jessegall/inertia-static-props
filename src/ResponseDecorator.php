@@ -69,13 +69,14 @@ class ResponseDecorator extends Response implements Decorator
             }
         }
 
+        // Store a list of static props for the client to use.
         $this->props['staticProps'] = $staticProps;
     }
 
     /**
      * Remove static props from the response.
      *
-     * @return void This method does not return a value.
+     * @return void
      */
     protected function removeStaticProps(): void
     {
