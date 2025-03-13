@@ -150,9 +150,6 @@ initial page load (e.g., navigating to a different route), you'll need to reload
 the static props are sent to the client. For this reason, it's generally better to share static props globally through
 middleware or a service provider where they'll be consistently available.
 
-If you decide to use static props in a controller, you must tell Inertia to reload the static props before rendering the
-component:
-
 ```php
 // Make sure to reload static props if the controller is accessed after the initial page load
 Inertia::reloadStaticProps(); 
