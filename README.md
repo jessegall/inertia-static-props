@@ -108,7 +108,7 @@ The shared static props will always be available in the page props.
 
 ```vue
 // In your page components
-<script>
+<script setup>
     const props = defineProps([
         'translations',
         'enums'
