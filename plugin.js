@@ -40,6 +40,10 @@ export const inertiaStaticPropsPlugin = {
             }
 
             for (const key in staticProps) {
+                if (data.props[key]) {
+                    continue;
+                }
+
                 data.props[key] = staticProps[key];
             }
 
