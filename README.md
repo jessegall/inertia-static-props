@@ -20,8 +20,6 @@ This is particularly useful for data that rarely or never changes during a user 
 - Application-wide constants and configuration settings
 - Permission definitions and feature flags
 - Dropdown options and select lists (countries, currencies, etc.)
-- UI theme configuration and global styling variables
-- Form validation rules and schema definitions
 - Navigation menu structures and sidebar configurations
 
 By using static props, you can significantly reduce the payload size and processing time for subsequent requests,
