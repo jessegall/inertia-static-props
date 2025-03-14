@@ -38,16 +38,6 @@ class ResponseDecorator extends Response implements Decorator
     }
 
     /**
-     * Remember the static properties on the response.
-     *
-     * @return StaticProp[]
-     */
-    protected function resolveStaticProps(): array
-    {
-        return array_filter($this->props, fn($prop) => $prop instanceof StaticProp);
-    }
-
-    /**
      * Prepare static prop values for the response.
      *
      * Replaces any StaticProp instances with a closure that returns
@@ -67,6 +57,16 @@ class ResponseDecorator extends Response implements Decorator
 
         // Store a list of static props for the client to use.
         $this->props['staticProps'] = array_keys($this->staticProps);
+    }
+
+    /**
+     * Resolve static props from the response.
+     *
+     * @return StaticProp[]
+     */
+    protected function resolveStaticProps(): array
+    {
+        return array_filter($this->props, fn($prop) => $prop instanceof StaticProp);
     }
 
     /**
