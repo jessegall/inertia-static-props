@@ -143,7 +143,7 @@ createInertiaApp({
 });
 ```
 
-### Manually Refreshing Static Props
+## Manually Refreshing Static Props
 
 Sometimes you need to refresh static props after certain actions, like changing the users locale, or when the user
 permissions change.
@@ -162,7 +162,7 @@ class LocaleController extends Controller
 }
 ```
 
-### Adding Static Props to Component Renders
+## Adding Static Props to Component Renders
 
 Though, not recommended, it is possible to include static props when rendering components.
 
@@ -183,7 +183,7 @@ static props are sent to the client.
 return Inertia::render(...)->withStaticProps(); // Add static props to the response
 ```
 
-### How It Works
+## How It Works
 
 Behind the scenes, the package:
 
@@ -196,6 +196,6 @@ Behind the scenes, the package:
 
 This results in smaller payloads and reduced server processing time for subsequent requests.
 
-### License
+## License
 
 MIT
