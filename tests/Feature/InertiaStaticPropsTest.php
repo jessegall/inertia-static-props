@@ -295,7 +295,7 @@ class InertiaStaticPropsTest extends TestCase
 
         };
 
-        $currentFactory->decorate($customFactory);
+        $currentFactory->delegateTo($customFactory);
 
         Inertia::share([
             'staticPropOne' => new StaticProp(fn() => 'one'),
