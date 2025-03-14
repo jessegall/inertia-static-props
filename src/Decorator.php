@@ -12,6 +12,6 @@ interface Decorator
      * @param T $delegate
      * @return void
      */
-    public function decorate(object $delegate): void;
+    public function delegateTo(object $delegate): void;
 
 }

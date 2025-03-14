@@ -24,7 +24,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      */
     public function __construct(ResponseFactory $delegate)
     {
-        $this->decorate($delegate);
+        $this->delegateTo($delegate);
     }
 
     /**

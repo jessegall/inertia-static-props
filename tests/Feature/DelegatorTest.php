@@ -150,7 +150,7 @@ class DelegatorTestDelegator extends DelegatorTestDelegate implements Decorator
 
     public function __construct(object $delegate)
     {
-        $this->decorate($delegate);
+        $this->delegateTo($delegate);
     }
 
     public function setCount(int $count): void

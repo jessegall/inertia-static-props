@@ -30,7 +30,7 @@ class ResponseDecorator extends Response implements Decorator
     public function __construct(Response $delegate)
     {
         // Skip the parent constructor as we delegate all properties
-        $this->decorate($delegate);
+        $this->delegateTo($delegate);
 
         $this->staticProps = $this->resolveStaticProps();
 
