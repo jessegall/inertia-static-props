@@ -44,16 +44,20 @@ class ResponseDecorator extends Response implements Decorator
      */
     public function loadStaticProps(): void
     {
+        $loaded = [];
+
         foreach ($this->staticProps as $key => $prop) {
             if (array_key_exists($key, $this->props)) {
                 continue;
             }
 
             $this->props[$key] = $prop->asClosure();
+
+            $loaded[] = $key;
         }
 
         // Store a list of static props for the client to use.
-        $this->props['staticProps'] = array_keys($this->staticProps);
+        $this->props['staticProps'] = $loaded;
     }
 
     /**
