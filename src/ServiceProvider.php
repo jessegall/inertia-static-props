@@ -53,7 +53,7 @@ class ServiceProvider extends BaseServiceProvider
             /** @var ResponseDecorator $decorator */
             $decorator = $this->__decorator;
             $decorator->loadStaticProps();
-            return $decorator;
+            return $decorator->delegate;
         });
     }
 
