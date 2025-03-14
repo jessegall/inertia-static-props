@@ -8,7 +8,7 @@ use Illuminate\Support\Traits\ForwardsCalls;
  * @template T of object
  * @phpstan-require-implements Decorator<T>
  */
-trait Delegates
+trait Decorates
 {
     use ForwardsCalls;
 
@@ -27,25 +27,16 @@ trait Delegates
      * @param T $delegate
      * @return void
      */
-    public function delegateTo(object $delegate): void
+    public function decorate(object $delegate): void
     {
         $this->delegate = $delegate;
 
-        $self = $this;
+        $linker = new PropertyLinker();
 
-        $linker = function () use ($self) {
-            $properties = array_keys(get_object_vars($this));
+        $linker->linkProperties($delegate, $this, ['__decorator']);
 
-            foreach ($properties as $property) {
-                // Overwrite the decorator property with a reference of the delegate property.
-                // This creates a direct reference so both properties share the same value.
-                $self->{$property} = &$this->{$property};
-            }
-        };
-
-        // Call the linker with the delegate as context.
-        // This allows the linker to access all (including private) properties of the delegate.
-        $linker->call($this->delegate);
+        // Keep a reference to the decorator on the delegate
+        $linker->write('__decorator', $delegate, $this);
     }
 
     /**

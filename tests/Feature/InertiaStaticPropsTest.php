@@ -9,6 +9,7 @@ use Inertia\Response;
 use Inertia\ResponseFactory;
 use Inertia\Support\Header;
 use Inertia\Testing\AssertableInertia as Assert;
+use JesseGall\InertiaStaticProps\Context;
 use JesseGall\InertiaStaticProps\StaticProp;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
@@ -92,6 +93,32 @@ class InertiaStaticPropsTest extends TestCase
             );
     }
 
+    public function test_StaticPropsAreIncludedAfterInitialPageLoad_WhenRenderingWithStaticProps_AndStaticPropsAreReloaded_UsingResponseMacro()
+    {
+        $this->app->make(Router::class)->get('/test-with-render-static-props-and-reload', function () {
+            return Inertia::render('TestComponent', [
+                'staticPropOne' => new StaticProp(fn() => 'one'),
+                'staticPropTwo' => new StaticProp(fn() => 'two'),
+                'nonStaticProp' => 'value',
+            ])->withStaticProps();
+        });
+
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test-with-render-static-props-and-reload', [
+                Header::INERTIA => true,
+            ])
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->has('props', fn(AssertableJson $props) => $props
+                    ->where('staticPropOne', 'one')
+                    ->where('staticPropTwo', 'two')
+                    ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
+                    ->etc()
+                )
+                ->etc()
+            );
+    }
+
     public function test_StaticPropsCanBeSharedUsingMacro()
     {
         Inertia::share([
@@ -133,7 +160,6 @@ class InertiaStaticPropsTest extends TestCase
                 ->etc()
             );
     }
-
 
     public function test_StaticPropsAreNotResolved_WhenOmitted()
     {
@@ -269,7 +295,7 @@ class InertiaStaticPropsTest extends TestCase
 
         };
 
-        $currentFactory->delegateTo($customFactory);
+        $currentFactory->decorate($customFactory);
 
         Inertia::share([
             'staticPropOne' => new StaticProp(fn() => 'one'),

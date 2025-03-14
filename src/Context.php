@@ -4,23 +4,23 @@ namespace JesseGall\InertiaStaticProps;
 
 use Illuminate\Http\Request;
 
-class StaticPropsReloader
+class Context
 {
 
     /**
-     * Flag determining if static props should be reloaded
+     * Flag determining if a static props reload has been requested
      */
-    protected bool $reloadStaticProps = false;
+    protected bool $staticPropsReloadRequested = false;
 
     /**
-     * Handle the static props reload
+     * Request a reload of the static props
      *
      * @return void
      */
-    public function __invoke(): void
+    public function requestStaticPropsReload(): void
     {
         if ($this->isGetRequest()) {
-            $this->reloadStaticProps = true;
+            $this->staticPropsReloadRequested = true;
         } else {
             session()->flash('inertia.reload-static-props');
         }
@@ -33,7 +33,7 @@ class StaticPropsReloader
      */
     public function isReloadRequested(): bool
     {
-        return $this->reloadStaticProps || session()->pull('inertia.reload-static-props', false);
+        return $this->staticPropsReloadRequested || session()->pull('inertia.reload-static-props', false);
     }
 
     /**
@@ -41,7 +41,7 @@ class StaticPropsReloader
      *
      * @return bool
      */
-    private function isGetRequest(): bool
+    protected function isGetRequest(): bool
     {
         return request()->isMethod(Request::METHOD_GET);
     }

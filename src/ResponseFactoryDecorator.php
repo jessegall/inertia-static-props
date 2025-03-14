@@ -5,7 +5,6 @@ namespace JesseGall\InertiaStaticProps;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use Inertia\Support\Header;
-use Override;
 
 /**
  * @implements Decorator<ResponseFactory>
@@ -13,9 +12,9 @@ use Override;
 class ResponseFactoryDecorator extends ResponseFactory implements Decorator
 {
     /**
-     * @use Delegates<ResponseFactory>
+     * @use Decorates<ResponseFactory>
      */
-    use Delegates;
+    use Decorates;
 
     /**
      * To ensure that custom ResponseFactory implementations will continue to work,
@@ -25,7 +24,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      */
     public function __construct(ResponseFactory $delegate)
     {
-        $this->delegateTo($delegate);
+        $this->decorate($delegate);
     }
 
     /**
@@ -35,7 +34,6 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      * @param mixed $props The props to pass to the component
      * @return Response The response
      */
-    #[Override]
     public function render(string $component, $props = []): Response
     {
         // We render the component using the delegate's render method,
@@ -75,7 +73,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
      */
     protected function isReloadRequested(): bool
     {
-        return app(StaticPropsReloader::class)->isReloadRequested();
+        return app(Context::class)->isReloadRequested();
     }
 
 }

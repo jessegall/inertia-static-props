@@ -131,19 +131,15 @@ return Inertia::render('Component', [
 ]);
 ```
 
-***Note:***
-Static props are only sent to the client during the initial page load. If your controller is accessed after the
-initial page load (e.g., navigating to a different route), you'll need to reload the static props to ensure
-the static props are sent to the client. For this reason, it's generally better to share static props globally through
-middleware or a service provider where they'll be consistently available.
+> [!NOTE]  
+> Static props are only sent to the client during the initial page load. If your controller is accessed after the
+> initial page load, you'll need to reload the static props to ensure the static
+> props are sent to the client.
 
 ```php
-// Make sure to reload static props if the controller is accessed after the initial page load
-Inertia::reloadStaticProps(); 
-
 return Inertia::render('Component', [
     'staticProp' => new StaticProp(...),
-]);
+])->withStaticProps(); // Add static props to the response
 ```
 
 ### How It Works
@@ -154,7 +150,8 @@ Behind the scenes, the package:
 2. Evaluates these props and sends them to the client
 3. Caches them in the frontend (browser)
 4. On subsequent requests, these props will NOT be resolved on the server and are removed from the response.
-5. The client-side adapter injects the cached props back into the page props before Inertia processes them, creating a seamless experience as if the server had sent them.
+5. The client-side adapter injects the cached props back into the page props before Inertia processes them, creating a
+   seamless experience as if the server had sent them.
 
 This results in smaller payloads and reduced server processing time for subsequent requests.
 

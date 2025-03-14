@@ -10,9 +10,16 @@ use Inertia\Response;
 class ResponseDecorator extends Response implements Decorator
 {
     /**
-     * @use Delegates<Response>
+     * @use Decorates<Response>
      */
-    use Delegates;
+    use Decorates;
+
+    /**
+     * The static properties that were present on the response.
+     *
+     * @var array
+     */
+    private array $staticProps;
 
     /**
      * Delegates all properties to the given Response, allowing
@@ -23,7 +30,19 @@ class ResponseDecorator extends Response implements Decorator
     public function __construct(Response $delegate)
     {
         // Skip the parent constructor as we delegate all properties
-        $this->delegateTo($delegate);
+        $this->decorate($delegate);
+
+        $this->staticProps = $this->resolveStaticProps();
+    }
+
+    /**
+     * Remember the static properties on the response.
+     *
+     * @return StaticProp[]
+     */
+    protected function resolveStaticProps(): array
+    {
+        return array_filter($this->props, fn($prop) => $prop instanceof StaticProp);
     }
 
     /**
@@ -33,7 +52,7 @@ class ResponseDecorator extends Response implements Decorator
      */
     public function resolveWithStaticProps(): Response
     {
-        $this->prepareStaticPropValues();
+        $this->loadStaticProps();
 
         return $this->delegate;
     }
@@ -41,7 +60,7 @@ class ResponseDecorator extends Response implements Decorator
     /**
      * Resolve the response without static props.
      *
-     * @return Response The response
+     * @return Response
      */
     public function resolveWithoutStaticProps(): Response
     {
@@ -58,19 +77,14 @@ class ResponseDecorator extends Response implements Decorator
      *
      * @return void
      */
-    protected function prepareStaticPropValues(): void
+    protected function loadStaticProps(): void
     {
-        $staticProps = [];
-
-        foreach ($this->props as $key => $value) {
-            if ($value instanceof StaticProp) {
-                $this->props[$key] = $value->asClosure();
-                $staticProps[] = $key;
-            }
+        foreach ($this->staticProps as $key => $prop) {
+            $this->props[$key] = $prop->asClosure();
         }
 
         // Store a list of static props for the client to use.
-        $this->props['staticProps'] = $staticProps;
+        $this->props['staticProps'] = array_keys($this->staticProps);
     }
 
     /**

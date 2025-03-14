@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use JesseGall\InertiaStaticProps\Delegates;
+use JesseGall\InertiaStaticProps\Decorates;
 use JesseGall\InertiaStaticProps\Decorator;
 use Orchestra\Testbench\TestCase;
 
@@ -146,11 +146,11 @@ class DelegatorTestDelegate
 
 class DelegatorTestDelegator extends DelegatorTestDelegate implements Decorator
 {
-    use Delegates;
+    use Decorates;
 
     public function __construct(object $delegate)
     {
-        $this->delegateTo($delegate);
+        $this->decorate($delegate);
     }
 
     public function setCount(int $count): void
