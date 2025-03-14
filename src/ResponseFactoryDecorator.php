@@ -42,10 +42,10 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
         $decorator = new ResponseDecorator($response);
 
         if ($this->shouldLoadStaticProps()) {
-            return $decorator->resolveWithStaticProps();
+            $decorator->loadStaticProps();
         }
 
-        return $decorator;
+        return $decorator->delegate;
     }
 
     /**
