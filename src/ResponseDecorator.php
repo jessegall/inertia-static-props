@@ -38,10 +38,7 @@ class ResponseDecorator extends Response implements Decorator
     }
 
     /**
-     * Prepare static prop values for the response.
-     *
-     * Replaces any StaticProp instances with a closure that returns
-     * the value, allowing Inertia to process them normally.
+     * Add static props to the response.
      *
      * @return void
      */
