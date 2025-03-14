@@ -1,10 +1,12 @@
 # Inertia Static Props
+
 *Optimize Inertia.js applications by loading static data only once*
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
 [![Total Downloads](https://img.shields.io/packagist/dt/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
 
-A Laravel package that improves performance by caching static data on the client side, reducing payload sizes and processing time for subsequent requests.
+A Laravel package that improves performance by caching static data on the client side, reducing payload sizes and
+processing time for subsequent requests.
 
 ## Introduction
 
@@ -125,7 +127,7 @@ class LocaleController extends Controller
 
 ### Adding Static Props to Component Renders
 
-You can include static props when rendering components:
+Though, not recommended, it is possible to include static props when rendering components.
 
 ```php
 return Inertia::render('Component', [
@@ -134,15 +136,14 @@ return Inertia::render('Component', [
 ]);
 ```
 
-> [!NOTE]  
-> Static props are only sent to the client during the initial page load. If your controller is accessed after the
-> initial page load, you'll need to reload the static props to ensure the static
-> props are sent to the client.
+> [!WARNING]  
+> Static props are only sent to the client during the initial page load.
+
+When your controller is accessed after the initial page load, you'll need to reload the static props to ensure the
+static props are sent to the client.
 
 ```php
-return Inertia::render('Component', [
-    'staticProp' => new StaticProp(...),
-])->withStaticProps(); // Add static props to the response
+return Inertia::render(...)->withStaticProps(); // Add static props to the response
 ```
 
 ### How It Works
