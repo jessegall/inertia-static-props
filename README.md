@@ -1,11 +1,14 @@
-# Laravel Inertia Static Props
+# Inertia Static Props
+*Optimize Inertia.js applications by loading static data only once*
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
 [![Total Downloads](https://img.shields.io/packagist/dt/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
 
+A Laravel package that improves performance by caching static data on the client side, reducing payload sizes and processing time for subsequent requests.
+
 ## Introduction
 
-Laravel Inertia Static Props optimizes your Inertia.js application by loading static data only once during the initial
+Inertia Static Props optimizes your Inertia.js application by loading static data only once during the initial
 page load. After that, static props are cached in the frontend and injected into the page props on every subsequent
 visit.
 
