@@ -15,7 +15,8 @@ processing time for subsequent requests.
 3. [Installation](#installation)
 4. [Manually Refreshing Static Props](#manually-refreshing-static-props)
 5. [Adding Static Props to Component Renders](#adding-static-props-to-component-renders)
-6. [License](#license)
+6. [How It Works](#how-it-works)
+7. [License](#license)
 
 ## Introduction
 
