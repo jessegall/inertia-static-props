@@ -52,7 +52,8 @@ class ServiceProvider extends BaseServiceProvider
         Response::macro('withStaticProps', function () {
             /** @var ResponseDecorator $decorator */
             $decorator = $this->__decorator;
-            return $decorator->resolveWithStaticProps();
+            $decorator->loadStaticProps();
+            return $decorator;
         });
     }
 
