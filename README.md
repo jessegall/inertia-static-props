@@ -104,6 +104,37 @@ class HandleInertiaRequests extends Middleware
 }
 ```
 
+The shared static props will always be available in the page props.
+
+```vue
+// In your page components
+<script>
+    const props = defineProps([
+        'translations',
+        'enums'
+    ])
+</script>
+
+// Using the page helper
+<script setup>
+    import {usePage} from "@inertiajs/vue3";
+
+    const page = usePage();
+    page.props.translations;
+    page.props.enums;
+</script>
+
+// Or in the template
+<template>
+    <div>
+        {{ $page.props.translations }}
+        {{ $page.props.enums }}
+    </div>
+</template>
+```
+
+Thats it! The static props will be cached in the frontend and injected into the page props on every subsequent visit.
+
 ### Manually Refreshing Static Props
 
 Sometimes you need to refresh static props after certain actions, like changing the users locale, or when the user
