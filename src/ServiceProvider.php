@@ -24,7 +24,13 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerFactoryDecorator(): void
     {
-        $this->app->extend(ResponseFactory::class, fn($factory) => new ResponseFactoryDecorator($factory));
+        $this->app->booted(function ($app) {
+            $factory = $app->make(ResponseFactory::class);
+
+            $decorator = new ResponseFactoryDecorator($factory);
+
+            Inertia::swap($decorator);
+        });
     }
 
     private function registerContext(): void
