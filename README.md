@@ -11,8 +11,8 @@ processing time for subsequent requests.
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Usage](#usage)
-3. [Installation](#installation)
+2. [Installation](#installation)
+3. [Usage](#usage)
 4. [Manually Refreshing Static Props](#manually-refreshing-static-props)
 5. [Adding Static Props to Component Renders](#adding-static-props-to-component-renders)
 6. [How It Works](#how-it-works)
@@ -35,6 +35,50 @@ This is particularly useful for data that rarely or never changes during a user 
 By using static props, you can significantly reduce the payload size and processing time for subsequent requests,
 leading to improved performance and a better user experience.
 
+## Installation
+
+The package consists of two parts: a Laravel backend package and a frontend adapter.
+
+### Backend
+
+Install the package via Composer:
+
+```bash
+composer require jessegall/inertia-static-props
+```
+
+The package will auto-register its service provider if you're using Laravel's package auto-discovery.
+
+Otherwise, you can manually register the service provider:
+
+```php
+\JesseGall\InertiaStaticProps\ServiceProvider::class
+```
+
+### Frontend
+
+1. Install the frontend adapter via npm:
+
+```bash
+npm i inertia-static-props
+```
+
+2. Set up the plugin in your Inertia application:
+
+```js
+// Import the plugin
+import {inertiaStaticPropsPlugin} from "inertia-static-props";
+
+createInertiaApp({
+    setup({el, App, props, plugin}) {
+        createApp({render: () => h(App, props)})
+            .use(plugin)
+            // Add other plugins...
+            .use(inertiaStaticPropsPlugin) // Register the static props plugin
+            .mount(el);
+    },
+});
+```
 ## Usage
 
 You can share static props from anywhere in your application.
@@ -99,49 +143,6 @@ The shared static props will always be available in the page props.
 ```
 
 Thats it! The static props will be cached in the frontend and injected into the page props on every subsequent visit.
-
-## Installation
-
-### Backend
-
-Install the package via Composer:
-
-```bash
-composer require jessegall/inertia-static-props
-```
-
-The package will auto-register its service provider if you're using Laravel's package auto-discovery.
-
-Otherwise, you can manually register the service provider:
-
-```php
-\JesseGall\InertiaStaticProps\ServiceProvider::class
-```
-
-### Frontend
-
-1. Install the frontend adapter via npm:
-
-```bash
-npm i inertia-static-props
-```
-
-2. Set up the plugin in your Inertia application:
-
-```js
-// Import the plugin
-import {inertiaStaticPropsPlugin} from "inertia-static-props";
-
-createInertiaApp({
-    setup({el, App, props, plugin}) {
-        createApp({render: () => h(App, props)})
-            .use(plugin)
-            // Add other plugins...
-            .use(inertiaStaticPropsPlugin) // Register the static props plugin
-            .mount(el);
-    },
-});
-```
 
 ## Manually Refreshing Static Props
 
