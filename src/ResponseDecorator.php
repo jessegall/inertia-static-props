@@ -33,6 +33,8 @@ class ResponseDecorator extends Response implements Decorator
         $this->decorate($delegate);
 
         $this->staticProps = $this->resolveStaticProps();
+
+        $this->removeStaticProps();
     }
 
     /**
@@ -58,18 +60,6 @@ class ResponseDecorator extends Response implements Decorator
     }
 
     /**
-     * Resolve the response without static props.
-     *
-     * @return Response
-     */
-    public function resolveWithoutStaticProps(): Response
-    {
-        $this->removeStaticProps();
-
-        return $this->delegate;
-    }
-
-    /**
      * Prepare static prop values for the response.
      *
      * Replaces any StaticProp instances with a closure that returns
@@ -80,6 +70,10 @@ class ResponseDecorator extends Response implements Decorator
     protected function loadStaticProps(): void
     {
         foreach ($this->staticProps as $key => $prop) {
+            if (array_key_exists($key, $this->props)) {
+                continue;
+            }
+
             $this->props[$key] = $prop->asClosure();
         }
 
