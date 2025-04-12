@@ -1,6 +1,6 @@
 # Inertia Static Props
 
-*Optimize Inertia.js application by loading static data only during the first page load.*
+*Optimize Inertia.js applications by loading static data only during the first page load.*
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
 [![Total Downloads](https://img.shields.io/packagist/dt/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
