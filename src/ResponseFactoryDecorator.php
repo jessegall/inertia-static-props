@@ -39,43 +39,7 @@ class ResponseFactoryDecorator extends ResponseFactory implements Decorator
         // We render the component using the delegate's render method,
         $response = $this->delegate->render($component, $props);
 
-        $decorator = new ResponseDecorator($response);
-
-        if ($this->shouldLoadStaticProps()) {
-            $decorator->loadStaticProps();
-        }
-
-        return $decorator->delegate;
-    }
-
-    /**
-     * Determine if static props should be loaded
-     *
-     * @return bool
-     */
-    protected function shouldLoadStaticProps(): bool
-    {
-        return $this->isInitialRequest() || $this->isReloadRequested();
-    }
-
-    /**
-     * Check if this is the initial request
-     *
-     * @return bool
-     */
-    protected function isInitialRequest(): bool
-    {
-        return ! request()->header(Header::INERTIA);
-    }
-
-    /**
-     * Check if a reload is requested
-     *
-     * @return bool
-     */
-    protected function isReloadRequested(): bool
-    {
-        return app(Context::class)->isReloadRequested();
+        return new ResponseDecorator($response);
     }
 
 }

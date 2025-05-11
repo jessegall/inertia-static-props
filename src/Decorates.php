@@ -33,10 +33,7 @@ trait Decorates
 
         $linker = new PropertyLinker();
 
-        $linker->linkProperties($delegate, $this, ['__decorator']);
-
-        // Keep a reference to the decorator on the delegate
-        $linker->write('__decorator', $delegate, $this);
+        $linker->linkProperties($delegate, $this);
     }
 
     /**

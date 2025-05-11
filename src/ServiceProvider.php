@@ -50,11 +50,14 @@ class ServiceProvider extends BaseServiceProvider
     private function registerResponseMacros(): void
     {
         Response::macro('withStaticProps', function () {
-            /** @var ResponseDecorator $decorator */
-            $decorator = $this->__decorator;
-            $decorator->loadStaticProps();
+            return new class($this) extends ResponseDecorator {
 
-            return $this;
+                protected function shouldLoadStaticProps(): bool
+                {
+                    return true;
+                }
+
+            };
         });
     }
 
