@@ -97,17 +97,10 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
   
             // Using a StaticProp instance
-            'translations' => new StaticProp(fn() => [
-                'pages' => Lang::get('pages'),
-                'exceptions' => Lang::get('exceptions'),
-                'components' => Lang::get('components'),
-            ]),
+            'translations' => new StaticProp(fn() => ... ),
             
             // Using the Inertia helper
-            'enums' => Inertia::static(fn() => [
-                'roleType' => RoleType::cases(),
-                'userStatus' => UserStatus::cases(),   
-            ]),
+            'enums' => Inertia::static(fn() => ... ),
         ];
     }
 }
