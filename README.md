@@ -97,10 +97,10 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
   
             // Using a StaticProp instance
-            'translations' => new StaticProp(fn() => ... ),
+            'translations' => new StaticProp(fn() => $this->resolveTranslations()),
             
             // Using the Inertia helper
-            'enums' => Inertia::static(fn() => ... ),
+            'enums' => Inertia::static(fn() => $this->resolveEnums()),
         ];
     }
 }
