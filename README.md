@@ -24,16 +24,8 @@ Inertia Static Props optimizes your Inertia.js application by loading static dat
 page load. After that, static props are cached in the frontend and injected into the page props on every subsequent
 visit.
 
-This is particularly useful for data that rarely or never changes during a user session, such as:
-
-- Translations and localization strings
-- Application-wide constants and configuration settings
-- Permission definitions and feature flags
-- Dropdown options and select lists (countries, currencies, etc.)
-- Navigation menu structures and sidebar configurations
-
 By using static props, you can significantly reduce the payload size and processing time for subsequent requests,
-leading to improved performance and a better user experience.
+leading to improved performance.
 
 ## Installation
 
