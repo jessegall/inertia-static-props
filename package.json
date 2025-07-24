@@ -1,6 +1,6 @@
 {
     "name": "inertia-static-props",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "description": "A Vue plugin for Inertia.js that manages static props across requests",
     "main": "plugin.js",
     "types": "plugin.d.ts",
