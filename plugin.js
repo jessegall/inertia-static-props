@@ -33,21 +33,25 @@ export const inertiaStaticPropsPlugin = {
         }
 
         function injectStaticProps(response) {
-            const data = JSON.parse(response.data);
+            const data = typeof response.data === 'object' ? response.data : JSON.parse(response.data)
 
             if (data.props.staticProps) {
-                loadStaticProps(data.props.staticProps, data.props);
+                loadStaticProps(data.props.staticProps, data.props)
             }
 
             for (const key in staticProps) {
                 if (data.props[key]) {
-                    continue;
+                    continue
                 }
 
-                data.props[key] = staticProps[key];
+                data.props[key] = staticProps[key]
             }
 
-            response.data = JSON.stringify(data);
+            if (typeof response.data === 'object') {
+                response.data = data
+            } else {
+                response.data = JSON.stringify(data)
+            }
         }
     }
 }
