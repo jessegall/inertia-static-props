@@ -2,6 +2,7 @@
 
 namespace JesseGall\InertiaStaticProps;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Inertia\Inertia;
@@ -50,6 +51,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         InertiaResponse::macro('withStaticProps', ResponseMacro::make());
         Response::macro('withStaticProps', ResponseMacro::make());
+        RedirectResponse::macro('withStaticProps', ResponseMacro::make());
     }
 
 }
