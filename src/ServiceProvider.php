@@ -2,9 +2,10 @@
 
 namespace JesseGall\InertiaStaticProps;
 
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 use Inertia\ResponseFactory;
 
 class ServiceProvider extends BaseServiceProvider
@@ -44,20 +45,22 @@ class ServiceProvider extends BaseServiceProvider
 
         Inertia::macro('static', fn(callable $value) => new StaticProp($value));
         Inertia::macro('staticProp', fn(callable $value) => new StaticProp($value)); // Alias for static
-        Inertia::macro('reloadStaticProps', fn() => $context->requestStaticPropsReload());
+        Inertia::macro('reloadStaticProps', function () {
+            app(Context::class)->requestStaticPropsReload();
+            return $this;
+        });
     }
 
     private function registerResponseMacros(): void
     {
+        InertiaResponse::macro('withStaticProps', function () {
+            app(Context::class)->requestStaticPropsReload();
+            return $this;
+        });
+
         Response::macro('withStaticProps', function () {
-            return new class($this) extends ResponseDecorator {
-
-                protected function shouldLoadStaticProps(): bool
-                {
-                    return true;
-                }
-
-            };
+            app(Context::class)->requestStaticPropsReload();
+            return $this;
         });
     }
 

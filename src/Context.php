@@ -10,7 +10,7 @@ class Context
     /**
      * Flag determining if a static props reload has been requested
      */
-    protected bool $staticPropsReloadRequested = false;
+    protected bool|null $staticPropsReloadRequested = null;
 
     /**
      * Request a reload of the static props
@@ -19,11 +19,7 @@ class Context
      */
     public function requestStaticPropsReload(): void
     {
-        if ($this->isGetRequest()) {
-            $this->staticPropsReloadRequested = true;
-        } else {
-            session()->flash('inertia.reload-static-props');
-        }
+        session()->flash('inertia.reload-static-props');
     }
 
     /**
@@ -33,7 +29,7 @@ class Context
      */
     public function isReloadRequested(): bool
     {
-        return $this->staticPropsReloadRequested || session()->pull('inertia.reload-static-props', false);
+        return $this->staticPropsReloadRequested ??= session()->pull('inertia.reload-static-props', false);
     }
 
     /**
