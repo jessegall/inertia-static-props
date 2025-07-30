@@ -41,32 +41,15 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerInertiaMacros(): void
     {
-        $context = $this->context();
-
         Inertia::macro('static', fn(callable $value) => new StaticProp($value));
         Inertia::macro('staticProp', fn(callable $value) => new StaticProp($value)); // Alias for static
-        Inertia::macro('reloadStaticProps', function () {
-            app(Context::class)->requestStaticPropsReload();
-            return $this;
-        });
+        Inertia::macro('reloadStaticProps', ResponseMacro::make());
     }
 
     private function registerResponseMacros(): void
     {
-        InertiaResponse::macro('withStaticProps', function () {
-            app(Context::class)->requestStaticPropsReload();
-            return $this;
-        });
-
-        Response::macro('withStaticProps', function () {
-            app(Context::class)->requestStaticPropsReload();
-            return $this;
-        });
-    }
-
-    private function context(): Context
-    {
-        return $this->app->make(Context::class);
+        InertiaResponse::macro('withStaticProps', ResponseMacro::make());
+        Response::macro('withStaticProps', ResponseMacro::make());
     }
 
 }
