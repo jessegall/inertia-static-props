@@ -19,7 +19,7 @@ class Context
      */
     public function requestStaticPropsReload(): void
     {
-        session()->flash('inertia.reload-static-props');
+        session()->put('inertia.reload-static-props', true);
     }
 
     /**
