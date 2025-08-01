@@ -2,8 +2,6 @@
 
 namespace JesseGall\InertiaStaticProps;
 
-use Illuminate\Http\Request;
-
 class Context
 {
 
@@ -30,16 +28,6 @@ class Context
     public function isReloadRequested(): bool
     {
         return $this->staticPropsReloadRequested ??= session()->pull('inertia.reload-static-props', false);
-    }
-
-    /**
-     * Check if the current request is a GET request
-     *
-     * @return bool
-     */
-    protected function isGetRequest(): bool
-    {
-        return request()->isMethod(Request::METHOD_GET);
     }
 
 }

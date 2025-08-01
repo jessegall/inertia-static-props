@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -221,6 +222,41 @@ class InertiaStaticPropsTest extends TestCase
         $this
             ->withoutExceptionHandling()
             ->post('/test')
+            ->assertRedirect('/test');
+
+        $this->assertTrue(session()->has('inertia.reload-static-props'));
+
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test', [
+                Header::INERTIA => true,
+            ])
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->has('props', fn(AssertableJson $props) => $props
+                    ->where('staticPropOne', 'one')
+                    ->where('staticPropTwo', 'two')
+                    ->where('staticProps', ['staticPropOne', 'staticPropTwo'])
+                    ->etc()
+                )
+                ->etc()
+            );
+    }
+
+    public function test_StaticPropsAreIncludedInSubsequentVisits_WhenStaticPropsAreReloadedWithRedirectResponse()
+    {
+        $this->app->make(Router::class)->get('/test-redirect', function () {
+            return redirect('/test')->withStaticProps();
+        });
+
+        Inertia::share([
+            'staticPropOne' => new StaticProp(fn() => 'one'),
+            'staticPropTwo' => new StaticProp(fn() => 'two'),
+            'nonStaticProp' => 'value',
+        ]);
+
+        $this
+            ->withoutExceptionHandling()
+            ->get('/test-redirect')
             ->assertRedirect('/test');
 
         $this->assertTrue(session()->has('inertia.reload-static-props'));
