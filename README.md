@@ -1,5 +1,7 @@
 # Inertia Static Props
 
+> **Deprecated:** This package is no longer maintained. Inertia.js v2 now includes native support for this functionality through "Once Props". Please use the official implementation instead: https://inertiajs.com/docs/v2/data-props/once-props
+
 *Optimize Inertia.js applications by loading static data only during the first page load.*
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jessegall/inertia-static-props.svg?style=flat-square)](https://packagist.org/packages/jessegall/inertia-static-props)
